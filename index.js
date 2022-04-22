@@ -3,6 +3,7 @@ const { MongoClient } = require("mongodb");
 const app = express();
 require("dotenv").config();
 const cors = require("cors");
+const { sendEmailWithNodemailer } = require("./helpers/email");
 const port = process.env.PORT || 5000;
 
 //configure midleware cors
@@ -44,7 +45,23 @@ async function run() {
     //save email pass auth data to mongodb
     app.post("/users", async (req, res) => {
       const user = req.body;
+
       const result = await usersCollection.insertOne(user);
+      console.log("ddd", result);
+
+      let emailbody = `
+            <h1>Account created successfully</h1>
+           
+            `;
+
+      const emailData = {
+        from: process.env.EMAIL_FROM,
+        to: user.email,
+        subject: `Hello ${user.displayName}. Thanks `,
+        html: emailbody,
+      };
+      sendEmailWithNodemailer(emailData);
+
       res.json(result);
     });
     //logedin person balance deposit
