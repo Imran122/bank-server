@@ -100,6 +100,26 @@ async function run() {
       );
       res.json(result);
     });
+    //api for balance transfer
+    app.put("/transfer/:email", async (req, res) => {
+      console.log("hello");
+      const user = req.body;
+      const filter = { email: user.email };
+      const balance = req.body;
+
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          balance: balance.balance,
+        },
+      };
+      const result = await usersCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.json(result);
+    });
 
     console.log("db connected");
   } finally {
