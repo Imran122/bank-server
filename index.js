@@ -47,6 +47,39 @@ async function run() {
       const result = await usersCollection.insertOne(user);
       res.json(result);
     });
+    //logedin person balance deposit
+    app.get("/users/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const user = await usersCollection.findOne(query);
+      console.log(user);
+      res.json(user);
+    });
+
+    //update balance
+    app.put("/updatebalance/:email", async (req, res) => {
+      console.log("hello");
+      const user = req.body;
+      const filter = { email: user.email };
+      const balance = req.body;
+
+      //const balance = { balance: user.balance };
+      console.log("xBalance ", balance);
+
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          balance: balance.balance,
+        },
+      };
+
+      const result = await usersCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.json(result);
+    });
 
     console.log("db connected");
   } finally {
